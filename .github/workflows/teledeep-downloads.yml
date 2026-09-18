@@ -1,0 +1,55 @@
+name: TeleDeep downloads release
+
+on:
+  push:
+    branches: [main, master, dev, teledeep]
+    paths:
+      - 'site/**'
+      - 'docs/TELEDEEP.md'
+      - '.github/workflows/teledeep-downloads.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create or update teledeep-downloads release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          NOTES=$(cat <<'EOF'
+          ## TeleDeep
+
+          Клиент **Telegram Desktop** с бэкендом [Deep Messenger](https://github.com/ArseniK10228/deep-messenger).
+
+          - Сайт: см. **GitHub Pages** репозитория (Actions → GitHub Pages)
+          - Пока нет готового `.exe` TeleDeep в CI — нужна сборка [TBuild](https://github.com/ArseniK10228/teledeep/blob/dev/docs/building-win.md) с `-DTELEDEEP_BUILD=ON`
+
+          ### Уже можно пользоваться
+
+          - [Deep Messenger — Windows / Android](https://github.com/ArseniK10228/deep-messenger/releases/tag/downloads)
+          - [Установщик Windows](https://github.com/ArseniK10228/deep-messenger/releases/download/downloads/Deep-Messenger-Windows-Setup-latest.exe)
+
+          ### API
+
+          `https://api.deepdesignpc.online`
+          EOF
+          )
+          if gh release view teledeep-downloads --repo "${{ github.repository }}" 2>/dev/null; then
+            gh release edit teledeep-downloads \
+              --repo "${{ github.repository }}" \
+              --title "Установка TeleDeep" \
+              --notes "$NOTES"
+          else
+            gh release create teledeep-downloads \
+              --repo "${{ github.repository }}" \
+              --title "Установка TeleDeep" \
+              --notes "$NOTES"
+          fi
+          echo "Release: https://github.com/${{ github.repository }}/releases/tag/teledeep-downloads"
