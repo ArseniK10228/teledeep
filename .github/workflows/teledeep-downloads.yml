@@ -1,0 +1,48 @@
+name: TeleDeep downloads release
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [TeleDeep Windows build]
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ensure teledeep-downloads release exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          NOTES="## TeleDeep
+
+          **Telegram Desktop** (форк) с бэкендом Deep и входом по email.
+
+          Файлы: **TeleDeep-Windows-latest.zip** — Telegram.exe + Updater.exe (x64).
+
+          Сборка: Actions → TeleDeep Windows build."
+          if gh release view teledeep-downloads --repo "${{ github.repository }}" 2>/dev/null; then
+            gh release edit teledeep-downloads --repo "${{ github.repository }}" --title "TeleDeep Windows" --notes "$NOTES"
+          else
+            gh release create teledeep-downloads --repo "${{ github.repository }}" --title "TeleDeep Windows" --notes "$NOTES"
+          fi
+
+      - name: Download build artifact from workflow run
+        if: github.event_name == 'workflow_run'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          RUN_ID="${{ github.event.workflow_run.id }}"
+          gh run download "$RUN_ID" --repo "${{ github.repository }}" -n "TeleDeep Windows x64" -D artifact
+          cd artifact
+          zip -r ../TeleDeep-Windows-latest.zip Telegram.exe Updater.exe
+          cd ..
+          gh release upload teledeep-downloads TeleDeep-Windows-latest.zip --clobber --repo "${{ github.repository }}"

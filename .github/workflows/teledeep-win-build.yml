@@ -1,0 +1,103 @@
+name: TeleDeep Windows build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [dev, teledeep, main]
+    paths:
+      - 'Telegram/**'
+      - '.github/workflows/teledeep-win-build.yml'
+
+concurrency:
+  group: teledeep-win-build
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    name: TeleDeep Windows x64
+    runs-on: windows-latest
+    timeout-minutes: 180
+    env:
+      UPLOAD_ARTIFACT: "true"
+      ONLY_CACHE: "false"
+      PREPARE_PATH: "Telegram/build/prepare/prepare.py"
+    defaults:
+      run:
+        shell: cmd
+    steps:
+      - name: Prepare directories
+        run: |
+          mkdir %userprofile%\TBuild\Libraries
+          mklink /d %GITHUB_WORKSPACE%\TBuild %userprofile%\TBuild
+          echo TBUILD=%GITHUB_WORKSPACE%\TBuild>>%GITHUB_ENV%
+          echo LibrariesPath=%GITHUB_WORKSPACE%\TBuild\Libraries\win64>>%GITHUB_ENV%
+
+      - name: Get repository name
+        shell: bash
+        run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
+
+      - name: Clone with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          path: ${{ env.TBUILD }}\${{ env.REPO_NAME }}
+
+      - name: First set up
+        shell: bash
+        run: |
+          DOCPATH=$TBUILD/$REPO_NAME/docs/building-win.md
+          SDK="$(grep "SDK version" $DOCPATH | sed -r 's/.*\*\*(.*)\*\* SDK version.*/\1/')"
+          echo "SDK=$SDK" >> $GITHUB_ENV
+          echo "$(sha256sum $TBUILD/$REPO_NAME/$PREPARE_PATH | awk '{ print $1 }')" >> CACHE_KEY.txt
+          echo "$SDK" >> CACHE_KEY.txt
+          echo "CACHE_KEY=$(sha256sum CACHE_KEY.txt | awk '{ print $1 }')" >> $GITHUB_ENV
+
+      - uses: Eden-CI/msvc-dev-cmd@master
+        name: Native Tools Command Prompt
+        with:
+          arch: x64
+          sdk: ${{ env.SDK }}
+
+      - name: Libraries cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.TBUILD }}\ThirdParty
+            ${{ env.LibrariesPath }}
+          key: teledeep-win-${{ env.CACHE_KEY }}
+          restore-keys: teledeep-win-
+
+      - name: Prepare libraries
+        run: |
+          %TBUILD%\%REPO_NAME%\Telegram\build\prepare\win.bat skip-release silent qt6
+
+      - name: Configure API credentials
+        shell: bash
+        run: |
+          if [ -n "${{ secrets.TDESKTOP_API_ID }}" ] && [ -n "${{ secrets.TDESKTOP_API_HASH }}" ]; then
+            echo "TDESKTOP_BUILD_API=-D TDESKTOP_API_ID=${{ secrets.TDESKTOP_API_ID }} -D TDESKTOP_API_HASH=${{ secrets.TDESKTOP_API_HASH }}" >> $GITHUB_ENV
+          else
+            echo "TDESKTOP_BUILD_API=-D TDESKTOP_API_TEST=ON" >> $GITHUB_ENV
+          fi
+
+      - name: Build TeleDeep
+        run: |
+          cd %TBUILD%\%REPO_NAME%\Telegram
+          call configure.bat x64 qt6 %TDESKTOP_BUILD_API% ^
+            -D TELEDEEP_BUILD=ON ^
+            -D CMAKE_CONFIGURATION_TYPES=Release ^
+            -D DESKTOP_APP_DISABLE_AUTOUPDATE=ON
+          cmake --build ..\out --config Release --parallel
+
+      - name: Stage artifact
+        run: |
+          set OUT=%TBUILD%\%REPO_NAME%\out\Release
+          mkdir artifact
+          copy /Y %OUT%\Telegram.exe artifact\
+          if exist %OUT%\Updater.exe copy /Y %OUT%\Updater.exe artifact\
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TeleDeep Windows x64
+          path: artifact\
+          retention-days: 7
