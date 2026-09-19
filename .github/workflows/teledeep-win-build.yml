@@ -15,8 +15,9 @@ concurrency:
 jobs:
   windows:
     name: TeleDeep Windows x64
-    runs-on: windows-latest
-    timeout-minutes: 180
+    # 16-core depot runner has much more disk than windows-latest (~14GB).
+    runs-on: depot-windows-latest-16
+    timeout-minutes: 360
     env:
       UPLOAD_ARTIFACT: "true"
       ONLY_CACHE: "false"
@@ -58,14 +59,33 @@ jobs:
           arch: x64
           sdk: ${{ env.SDK }}
 
+      - name: ThirdParty cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.TBUILD }}\ThirdParty
+          key: teledeep-win-third-party-${{ env.CACHE_KEY }}
+          restore-keys: teledeep-win-third-party-
+
       - name: Libraries cache
         uses: actions/cache@v4
         with:
           path: |
-            ${{ env.TBUILD }}\ThirdParty
-            ${{ env.LibrariesPath }}
-          key: teledeep-win-${{ env.CACHE_KEY }}
-          restore-keys: teledeep-win-
+            ${{ env.LibrariesPath }}\*
+            !${{ env.LibrariesPath }}\cache_keys
+            !${{ env.LibrariesPath }}\[qQ]t[_-]*
+            ${{ env.LibrariesPath }}\cache_keys\*
+            !${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
+          key: teledeep-win-libs-${{ env.CACHE_KEY }}
+          restore-keys: teledeep-win-libs-
+
+      - name: Qt cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.LibrariesPath }}\[qQ]t[_-]*
+            ${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
+          key: teledeep-win-qt-${{ env.CACHE_KEY }}
+          restore-keys: teledeep-win-qt-
 
       - name: Prepare libraries
         run: |
@@ -79,6 +99,10 @@ jobs:
           else
             echo "TDESKTOP_BUILD_API=-D TDESKTOP_API_TEST=ON" >> $GITHUB_ENV
           fi
+
+      - name: Free up some disk space
+        shell: bash
+        run: find $LibrariesPath '(' '(' ! '(' -name '*.lib' -o -name '*.a' -o -name '*.exe' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -name '*.pc' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' -o -path '*/nv-codec-headers/*' ')' -type f ')' -o -empty ')' -delete
 
       - name: Build TeleDeep
         run: |
