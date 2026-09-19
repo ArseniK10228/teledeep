@@ -57,13 +57,19 @@ jobs:
         with:
           arch: x64
           sdk: ${{ env.SDK }}
+          toolset: 14.44
+
+      - name: NuGet sources
+        run: |
+          nuget sources Disable -Name "Microsoft Visual Studio Offline Packages"
+          nuget sources Add -Source https://api.nuget.org/v3/index.json & exit 0
 
       - name: ThirdParty cache
         uses: actions/cache@v4
         with:
           path: ${{ env.TBUILD }}\ThirdParty
-          key: teledeep-win-third-party-${{ env.CACHE_KEY }}
-          restore-keys: teledeep-win-third-party-
+          key: ${{ runner.os }}-${{ runner.arch }}-teledeep-third-party-v3-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-teledeep-third-party-v3-
 
       - name: Libraries cache
         uses: actions/cache@v4
@@ -74,8 +80,8 @@ jobs:
             !${{ env.LibrariesPath }}\[qQ]t[_-]*
             ${{ env.LibrariesPath }}\cache_keys\*
             !${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
-          key: teledeep-win-libs-${{ env.CACHE_KEY }}
-          restore-keys: teledeep-win-libs-
+          key: ${{ runner.os }}-${{ runner.arch }}-teledeep-libs-v3-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-teledeep-libs-v3-
 
       - name: Qt cache
         uses: actions/cache@v4
@@ -83,8 +89,8 @@ jobs:
           path: |
             ${{ env.LibrariesPath }}\[qQ]t[_-]*
             ${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
-          key: teledeep-win-qt-${{ env.CACHE_KEY }}
-          restore-keys: teledeep-win-qt-
+          key: ${{ runner.os }}-${{ runner.arch }}-teledeep-qt-v3-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-teledeep-qt-v3-
 
       - name: Prepare libraries
         run: |
