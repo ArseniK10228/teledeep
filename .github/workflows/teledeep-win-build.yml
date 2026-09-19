@@ -27,10 +27,9 @@ jobs:
     steps:
       - name: Prepare directories
         run: |
-          mkdir D:\TBuild\Libraries\win64
-          mklink /d %GITHUB_WORKSPACE%\TBuild D:\TBuild
-          echo TBUILD=D:\TBuild>>%GITHUB_ENV%
-          echo LibrariesPath=D:\TBuild\Libraries\win64>>%GITHUB_ENV%
+          mkdir %GITHUB_WORKSPACE%\TBuild\Libraries\win64
+          echo TBUILD=%GITHUB_WORKSPACE%\TBuild>>%GITHUB_ENV%
+          echo LibrariesPath=%GITHUB_WORKSPACE%\TBuild\Libraries\win64>>%GITHUB_ENV%
 
       - name: Get repository name
         shell: bash
