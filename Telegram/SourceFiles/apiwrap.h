@@ -207,6 +207,9 @@ public:
 
 	void requestContacts();
 	void requestDialogs(Data::Folder *folder = nullptr);
+#ifdef TELEDEEP_BUILD
+	void completeDeepDialogsLoad(Data::Folder *folder);
+#endif
 	void requestPinnedDialogs(Data::Folder *folder = nullptr);
 	void reloadPinnedDialogs(Data::Folder *folder = nullptr);
 	void requestMoreBlockedByDateDialogs();

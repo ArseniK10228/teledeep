@@ -1,6 +1,7 @@
 #include "intro/intro_deep_code.h"
 
 #include "intro/intro_code_input.h"
+#include "intro/intro_widget.h"
 #include "deep/deep_api_client.h"
 #include "deep/deep_mtp.h"
 #include "deep/deep_session.h"
@@ -55,7 +56,7 @@ void DeepCodeWidget::submitCode(const QString &code) {
 	}
 	const auto requestId = getData()->deepAuthRequestId;
 	if (requestId.isEmpty()) {
-		showError(QStringLiteral("session expired"));
+		showError(rpl::single(QStringLiteral("session expired")));
 		return;
 	}
 	_waiting = true;
@@ -81,7 +82,7 @@ void DeepCodeWidget::submitCode(const QString &code) {
 		[=](const QString &error) {
 			_waiting = false;
 			_code->showError();
-			showError(error);
+			showError(rpl::single(error));
 		});
 }
 

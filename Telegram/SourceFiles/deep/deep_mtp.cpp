@@ -50,10 +50,8 @@ MTPUser makeUser(
 		const QString &uuid,
 		const QString &displayName,
 		bool self) {
-	auto flags = MTPDuser::Flag::f_first_name;
-	if (self) {
-		flags |= MTPDuser::Flag::f_self;
-	}
+	const auto flags = MTPDuser::Flag::f_first_name
+		| (self ? MTPDuser::Flag::f_self : MTPDuser::Flag());
 	return MTP_user(
 		MTP_flags(flags),
 		MTP_long(bareIdFromUuid(uuid)),
@@ -86,48 +84,43 @@ MTPMessage makeTextMessage(
 		TimeId date,
 		const QString &text,
 		bool outgoing) {
-	auto flags = MTPDmessage::Flag::f_peer_id;
-	if (outgoing) {
-		flags |= MTPDmessage::Flag::f_out;
-	}
-	if (fromPeerId) {
-		flags |= MTPDmessage::Flag::f_from_id;
-	}
+	const auto flags = (outgoing ? MTPDmessage::Flag::f_out : MTPDmessage::Flag())
+		| (fromPeerId ? MTPDmessage::Flag::f_from_id : MTPDmessage::Flag());
 	return MTP_message(
 		MTP_flags(flags),
 		MTP_int(id.bare),
 		fromPeerId ? peerToMTP(fromPeerId) : MTPPeer(),
-		MTPint(),
-		MTPstring(),
+		MTPint(), // from_boosts_applied
+		MTPstring(), // from_rank
 		peerToMTP(peerId),
-		MTPPeer(),
+		MTPPeer(), // saved_peer_id
 		MTPMessageFwdHeader(),
-		MTPlong(),
-		MTPlong(),
-		MTPPeer(),
+		MTPlong(), // via_bot_id
+		MTPlong(), // via_business_bot_id
+		MTPPeer(), // guestchat_via_from
 		MTPMessageReplyHeader(),
 		MTP_int(date),
 		MTP_string(text),
 		MTP_messageMediaEmpty(),
 		MTPReplyMarkup(),
 		MTPVector<MTPMessageEntity>(),
-		MTPint(),
-		MTPint(),
+		MTPint(), // views
+		MTPint(), // forwards
 		MTPMessageReplies(),
-		MTPint(),
-		MTPstring(),
-		MTPlong(),
+		MTPint(), // edit_date
+		MTPstring(), // post_author
+		MTPlong(), // grouped_id
 		MTPMessageReactions(),
 		MTPVector<MTPRestrictionReason>(),
-		MTPint(),
-		MTPint(),
-		MTPlong(),
+		MTPint(), // ttl_period
+		MTPint(), // quick_reply_shortcut_id
+		MTPlong(), // effect
 		MTPFactCheck(),
-		MTPint(),
-		MTPlong(),
+		MTPint(), // report_delivery_until_date
+		MTPlong(), // paid_message_stars
 		MTPSuggestedPost(),
-		MTPint(),
-		MTPstring(),
+		MTPint(), // schedule_repeat_period
+		MTPstring(), // summary_from_language
 		MTPRichMessage());
 }
 

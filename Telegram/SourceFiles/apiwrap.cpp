@@ -1101,6 +1101,22 @@ auto ApiWrap::dialogsLoadState(Data::Folder *folder) -> DialogsLoadState* {
 	return (i != end(_foldersLoadState)) ? &i->second : nullptr;
 }
 
+#ifdef TELEDEEP_BUILD
+void ApiWrap::completeDeepDialogsLoad(Data::Folder *folder) {
+	const auto state = dialogsLoadState(folder);
+	if (!state) {
+		return;
+	}
+	state->requestId = 0;
+	state->listReceived = true;
+	state->pinnedReceived = true;
+	state->pinnedRequestId = 0;
+	dialogsLoadFinish(folder);
+	requestMoreDialogsIfNeeded();
+	_session->data().chatsListChanged(folder);
+}
+#endif
+
 void ApiWrap::dialogsLoadFinish(Data::Folder *folder) {
 	const auto notify = [&] {
 		Core::App().postponeCall(crl::guard(_session, [=] {
@@ -3649,6 +3665,7 @@ void ApiWrap::requestHistory(
 				_historyRequests.remove(key);
 				finish();
 			});
+			return mtpRequestId(0);
 		});
 		_historyRequests.emplace(key);
 		return;

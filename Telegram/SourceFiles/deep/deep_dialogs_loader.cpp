@@ -44,20 +44,6 @@ namespace {
 	return QString();
 }
 
-void finishDialogLoad(ApiWrap *api, Data::Folder *folder) {
-	const auto state = api->dialogsLoadState(folder);
-	if (!state) {
-		return;
-	}
-	state->requestId = 0;
-	state->listReceived = true;
-	state->pinnedReceived = true;
-	state->pinnedRequestId = 0;
-	api->dialogsLoadFinish(folder);
-	api->requestMoreDialogsIfNeeded();
-	api->session().data().chatsListChanged(folder);
-}
-
 } // namespace
 
 void requestDialogs(ApiWrap *api, Data::Folder *folder) {
@@ -117,10 +103,10 @@ void requestDialogs(ApiWrap *api, Data::Folder *folder) {
 				messages,
 				dialogs,
 				dialogs.size());
-			finishDialogLoad(api, folder);
+			api->completeDeepDialogsLoad(folder);
 		},
 		[=](const QString &) {
-			finishDialogLoad(api, folder);
+			api->completeDeepDialogsLoad(folder);
 		});
 }
 
