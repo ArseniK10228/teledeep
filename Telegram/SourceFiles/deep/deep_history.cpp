@@ -5,7 +5,9 @@
 #include "deep/deep_api_client.h"
 #include "deep/deep_messages.h"
 #include "deep/deep_session.h"
+#include "data/data_history_messages.h"
 #include "history/history.h"
+#include "history/history_item.h"
 #include "main/main_session.h"
 
 namespace Deep {

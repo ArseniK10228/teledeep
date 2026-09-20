@@ -4,10 +4,6 @@
 
 #include <QString>
 
-class MTPUser;
-class MTPMessage;
-class MTPDialog;
-
 namespace Deep {
 
 [[nodiscard]] uint64 bareIdFromUuid(const QString &uuid);

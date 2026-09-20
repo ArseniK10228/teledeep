@@ -3,6 +3,7 @@
 #include "deep/deep_api_client.h"
 #include "deep/deep_messages.h"
 #include "deep/deep_session.h"
+#include "data/data_session.h"
 #include "main/main_session.h"
 
 #include <QJsonArray>

@@ -9,7 +9,6 @@ struct PreparedList;
 } // namespace Ui
 
 enum class SendMediaType;
-struct SendAction;
 struct SendingAlbum;
 
 namespace Deep {
@@ -24,6 +23,6 @@ void sendFiles(
 	Ui::PreparedList &&list,
 	SendMediaType type,
 	std::shared_ptr<SendingAlbum> album,
-	SendAction action);
+	Api::SendAction action);
 
 } // namespace Deep

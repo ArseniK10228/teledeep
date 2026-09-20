@@ -1,6 +1,7 @@
 #include "deep/deep_mtp.h"
 
 #include "data/data_peer_id.h"
+#include "scheme.h"
 
 #include <QUuid>
 
