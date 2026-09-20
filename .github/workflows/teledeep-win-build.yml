@@ -126,7 +126,7 @@ jobs:
           copy /Y %OUT%\Telegram.exe artifact\
           if exist %OUT%\Updater.exe copy /Y %OUT%\Updater.exe artifact\
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: TeleDeep Windows x64
           path: artifact\
