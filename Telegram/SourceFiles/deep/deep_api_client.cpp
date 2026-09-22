@@ -12,8 +12,8 @@
 #include <QUrlQuery>
 #include <QFile>
 #include <QFileInfo>
-#include <QHttpMultiPart>
-#include <QHttpPart>
+#include <QtNetwork/QHttpMultiPart>
+#include <QtNetwork/QHttpPart>
 #include <memory>
 
 namespace Deep {

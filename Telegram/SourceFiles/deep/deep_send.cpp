@@ -40,7 +40,7 @@ void sendTextMessage(
 	};
 	const auto prepareFlags = Ui::ItemTextOptions(
 		history,
-		session->user()).flags;
+		not_null<PeerData*>(session->user())).flags;
 	TextUtilities::PrepareForSending(left, prepareFlags);
 	TextUtilities::Trim(left);
 	sending = left;
