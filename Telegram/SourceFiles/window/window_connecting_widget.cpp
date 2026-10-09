@@ -22,6 +22,10 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "lang/lang_keys.h"
 #include "styles/style_window.h"
 
+#ifdef TELEDEEP_BUILD
+#include "deep/deep_session.h"
+#endif
+
 #include <QtGui/QWindow>
 
 namespace Window {
@@ -312,8 +316,13 @@ void ConnectionState::refreshState() {
 		const auto under = _widget && _widget->isOver();
 		const auto ready = !Core::UpdaterDisabled()
 			&& (Checker().state() == Checker::State::Ready);
-		const auto state = _account->mtp().dcstate();
 		const auto proxy = Core::App().settings().proxy().isEnabled();
+#ifdef TELEDEEP_BUILD
+		if (Deep::Session::instance().hasToken()) {
+			return { State::Type::Connected, proxy, exposed, under, ready };
+		}
+#endif
+		const auto state = _account->mtp().dcstate();
 		if (state == MTP::ConnectingState
 			|| state == MTP::DisconnectedState
 			|| (state < 0 && state > -600)) {

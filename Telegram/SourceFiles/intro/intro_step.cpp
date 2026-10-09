@@ -39,6 +39,11 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "styles/style_intro.h"
 #include "styles/style_window.h"
 
+#ifdef TELEDEEP_BUILD
+#include "deep/deep_auth_storage.h"
+#include "deep/deep_session.h"
+#endif
+
 namespace Intro {
 namespace details {
 namespace {
@@ -208,6 +213,12 @@ void Step::finish(const MTPUser &user, QImage &&photo) {
 		}
 	}
 
+#ifdef TELEDEEP_BUILD
+	if (Deep::Session::instance().hasToken()) {
+		createSession(user, photo, QVector<MTPDialogFilter>(), false);
+		return;
+	}
+#endif
 	api().request(MTPmessages_GetDialogFilters(
 	)).done([=](const MTPmessages_DialogFilters &result) {
 		const auto &d = result.data();

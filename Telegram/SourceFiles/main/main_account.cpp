@@ -28,6 +28,10 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "main/main_domain.h"
 #include "main/main_session_settings.h"
 
+#ifdef TELEDEEP_BUILD
+#include "deep/deep_auth_storage.h"
+#endif
+
 namespace Main {
 namespace {
 
@@ -554,6 +558,9 @@ void Account::forcedLogOut() {
 void Account::loggedOut() {
 	_loggingOut = false;
 	Media::Player::mixer()->stopAndClear();
+#ifdef TELEDEEP_BUILD
+	Deep::clearAuth(this);
+#endif
 	destroySession(DestroyReason::LoggedOut);
 	local().reset();
 	cSetOtherOnline(0);

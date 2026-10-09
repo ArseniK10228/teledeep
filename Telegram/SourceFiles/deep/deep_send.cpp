@@ -12,6 +12,8 @@
 #include "main/main_session.h"
 #include "ui/chat/attach/attach_prepare.h"
 #include "api/api_text_entities.h"
+#include "data/data_peer.h"
+#include "ui/item_text_options.h"
 #include "ui/text/text_utilities.h"
 
 namespace Deep {
@@ -38,7 +40,7 @@ void sendTextMessage(
 	};
 	const auto prepareFlags = Ui::ItemTextOptions(
 		history,
-		session.user()).flags;
+		static_cast<PeerData*>(session.user().get())).flags;
 	TextUtilities::PrepareForSending(left, prepareFlags);
 	TextUtilities::Trim(left);
 	sending = left;

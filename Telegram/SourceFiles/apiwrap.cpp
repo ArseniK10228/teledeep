@@ -8,6 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "apiwrap.h"
 
 #ifdef TELEDEEP_BUILD
+#include "deep/deep_auth_storage.h"
 #include "deep/deep_dialogs_loader.h"
 #include "deep/deep_history.h"
 #include "deep/deep_realtime.h"
@@ -242,6 +243,9 @@ ApiWrap::ApiWrap(not_null<Main::Session*> session)
 , _usernames(std::make_unique<Api::Usernames>(this))
 , _websites(std::make_unique<Api::Websites>(this))
 , _peerColors(std::make_unique<Api::PeerColors>(this)) {
+#ifdef TELEDEEP_BUILD
+	Deep::restoreAuth(&_session->account());
+#endif
 	crl::on_main(session, [=] {
 		// You can't use _session->lifetime() in the constructor,
 		// only queued, because it is not constructed yet.
@@ -4779,7 +4783,7 @@ void ApiWrap::sendMessage(
 	};
 	auto prepareFlags = Ui::ItemTextOptions(
 		history,
-		_session->user()).flags;
+		static_cast<PeerData*>(_session->user().get())).flags;
 	TextUtilities::PrepareForSending(left, prepareFlags);
 
 #ifdef TELEDEEP_BUILD

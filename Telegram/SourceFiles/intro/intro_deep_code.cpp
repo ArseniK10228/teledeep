@@ -2,6 +2,7 @@
 
 #include "intro/intro_code_input.h"
 #include "deep/deep_api_client.h"
+#include "deep/deep_auth_storage.h"
 #include "deep/deep_mtp.h"
 #include "deep/deep_session.h"
 #include "lang/lang_keys.h"
@@ -70,6 +71,7 @@ void DeepCodeWidget::submitCode(const QString &code) {
 			Deep::Session::instance().setToken(token);
 			Deep::Session::instance().setUserId(
 				user.value(QStringLiteral("id")).toString());
+			Deep::persistAuth(account());
 			const auto name = user.value(QStringLiteral("displayName")).toString();
 			const auto email = user.value(QStringLiteral("email")).toString();
 			const auto display = !name.isEmpty() ? name : email;

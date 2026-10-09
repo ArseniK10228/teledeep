@@ -2226,6 +2226,8 @@ if (TELEDEEP_BUILD)
     PRIVATE
         deep/deep_api_client.cpp
         deep/deep_api_client.h
+        deep/deep_auth_storage.cpp
+        deep/deep_auth_storage.h
         deep/deep_config.cpp
         deep/deep_config.h
         deep/deep_dialogs_loader.cpp
