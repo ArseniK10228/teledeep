@@ -89,7 +89,7 @@ void sendFiles(
 		Ui::PreparedList &&list,
 		SendMediaType type,
 		std::shared_ptr<SendingAlbum> album,
-		SendAction action) {
+		Api::SendAction action) {
 	const auto history = action.history;
 	const auto peer = history->peer;
 	const auto convId = Session::instance().conversationForPeer(peer->id);

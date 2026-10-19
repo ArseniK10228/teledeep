@@ -116,13 +116,14 @@ jobs:
           cd %TBUILD%\%REPO_NAME%\Telegram
           call configure.bat x64 qt6 %TDESKTOP_BUILD_API% ^
             -D TELEDEEP_BUILD=ON ^
-            -D CMAKE_CONFIGURATION_TYPES=Release ^
+            -D CMAKE_CONFIGURATION_TYPES=Debug ^
+            -D CMAKE_MSVC_DEBUG_INFORMATION_FORMAT= ^
             -D DESKTOP_APP_DISABLE_AUTOUPDATE=ON
-          cmake --build ..\out --config Release --parallel
+          cmake --build ..\out --config Debug --parallel
 
       - name: Stage artifact
         run: |
-          set OUT=%TBUILD%\%REPO_NAME%\out\Release
+          set OUT=%TBUILD%\%REPO_NAME%\out\Debug
           mkdir artifact
           copy /Y %OUT%\Telegram.exe artifact\
           if exist %OUT%\Updater.exe copy /Y %OUT%\Updater.exe artifact\
