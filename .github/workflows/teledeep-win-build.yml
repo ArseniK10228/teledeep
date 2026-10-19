@@ -9,8 +9,12 @@ on:
       - '.github/workflows/teledeep-win-build.yml'
 
 concurrency:
-  group: teledeep-win-build
-  cancel-in-progress: true
+  group: teledeep-win-build-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  actions: write
+  contents: read
 
 jobs:
   windows:
