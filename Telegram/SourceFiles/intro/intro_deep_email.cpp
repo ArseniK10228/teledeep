@@ -1,6 +1,7 @@
 #include "intro/intro_deep_email.h"
 
 #include "intro/intro_deep_code.h"
+#include "intro/intro_widget.h"
 #include "deep/deep_api_client.h"
 #include "lang/lang_keys.h"
 #include "ui/widgets/fields/input_field.h"

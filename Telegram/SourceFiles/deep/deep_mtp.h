@@ -1,12 +1,9 @@
 #pragma once
 
 #include "data/data_peer_id.h"
+#include "scheme.h"
 
 #include <QString>
-
-class MTPUser;
-class MTPMessage;
-class MTPDialog;
 
 namespace Deep {
 

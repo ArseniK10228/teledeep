@@ -1,6 +1,7 @@
 #include "intro/intro_deep_code.h"
 
 #include "intro/intro_code_input.h"
+#include "intro/intro_widget.h"
 #include "deep/deep_api_client.h"
 #include "deep/deep_auth_storage.h"
 #include "deep/deep_mtp.h"
