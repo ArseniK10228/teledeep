@@ -150,6 +150,7 @@ class ApiWrap;
 
 #ifdef TELEDEEP_BUILD
 namespace Deep {
+void finishDialogLoad(ApiWrap *api, Data::Folder *folder);
 void requestDialogs(ApiWrap *api, Data::Folder *folder);
 void requestHistory(
 	ApiWrap *api,
@@ -497,6 +498,7 @@ public:
 
 private:
 #ifdef TELEDEEP_BUILD
+	friend void Deep::finishDialogLoad(ApiWrap *api, Data::Folder *folder);
 	friend void Deep::requestDialogs(ApiWrap *api, Data::Folder *folder);
 	friend void Deep::requestHistory(
 		ApiWrap *api,

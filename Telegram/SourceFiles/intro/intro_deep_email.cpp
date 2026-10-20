@@ -21,8 +21,8 @@ DeepEmailWidget::DeepEmailWidget(
 		Qt::ImhEmailCharactersOnly
 		| Qt::ImhNoAutoUppercase
 		| Qt::ImhNoPredictiveText);
-	connect(_email, &Ui::InputField::submitted, [=] { submit(); });
-	connect(_email, &Ui::InputField::changed, [=] { hideError(); });
+	_email->submits() | rpl::on_next([=] { submit(); }, _email->lifetime());
+	_email->changes() | rpl::on_next([=] { hideError(); }, _email->lifetime());
 
 	setTitleText(tr::lng_intro_email_setup_title());
 	setDescriptionText(tr::lng_settings_cloud_login_email_about());
@@ -66,7 +66,7 @@ void DeepEmailWidget::submit() {
 			_waiting = false;
 			_email->setFocus();
 			_email->showError();
-			showError(error);
+			showError(rpl::single(error));
 		});
 }
 

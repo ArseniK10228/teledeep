@@ -8,6 +8,7 @@ class ApiWrap;
 
 namespace Deep {
 
+void finishDialogLoad(ApiWrap *api, Data::Folder *folder);
 void requestDialogs(ApiWrap *api, Data::Folder *folder);
 
 } // namespace Deep

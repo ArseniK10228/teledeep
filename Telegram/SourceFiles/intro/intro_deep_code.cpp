@@ -56,7 +56,7 @@ void DeepCodeWidget::submitCode(const QString &code) {
 	}
 	const auto requestId = getData()->deepAuthRequestId;
 	if (requestId.isEmpty()) {
-		showError(QStringLiteral("session expired"));
+		showError(rpl::single(QStringLiteral("session expired")));
 		return;
 	}
 	_waiting = true;
@@ -83,7 +83,7 @@ void DeepCodeWidget::submitCode(const QString &code) {
 		[=](const QString &error) {
 			_waiting = false;
 			_code->showError();
-			showError(error);
+			showError(rpl::single(error));
 		});
 }
 

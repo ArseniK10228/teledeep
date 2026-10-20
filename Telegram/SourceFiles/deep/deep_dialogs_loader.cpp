@@ -44,6 +44,8 @@ namespace {
 	return QString();
 }
 
+} // namespace
+
 void finishDialogLoad(ApiWrap *api, Data::Folder *folder) {
 	const auto state = api->dialogsLoadState(folder);
 	if (!state) {
@@ -57,8 +59,6 @@ void finishDialogLoad(ApiWrap *api, Data::Folder *folder) {
 	api->requestMoreDialogsIfNeeded();
 	api->session().data().chatsListChanged(folder);
 }
-
-} // namespace
 
 void requestDialogs(ApiWrap *api, Data::Folder *folder) {
 	const auto state = api->dialogsLoadState(folder);

@@ -3653,6 +3653,7 @@ void ApiWrap::requestHistory(
 				_historyRequests.remove(key);
 				finish();
 			});
+			return mtpRequestId(0);
 		});
 		_historyRequests.emplace(key);
 		return;

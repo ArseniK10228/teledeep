@@ -85,7 +85,7 @@ MTPMessage makeTextMessage(
 		TimeId date,
 		const QString &text,
 		bool outgoing) {
-	auto flags = MTPDmessage::Flag::f_peer_id;
+	auto flags = MTPDmessage::Flag();
 	if (outgoing) {
 		flags |= MTPDmessage::Flag::f_out;
 	}

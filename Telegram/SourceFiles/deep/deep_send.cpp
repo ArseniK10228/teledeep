@@ -10,6 +10,7 @@
 #include "history/history_item.h"
 #include "history/history_item_helpers.h"
 #include "main/main_session.h"
+#include "storage/localimageloader.h"
 #include "ui/chat/attach/attach_prepare.h"
 #include "api/api_text_entities.h"
 #include "data/data_peer.h"
